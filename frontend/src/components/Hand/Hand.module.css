@@ -1,0 +1,77 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.title {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hand {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.empty {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.playPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--accent-moon);
+  border-radius: var(--radius-md);
+}
+
+.playPanelTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-moon);
+}
+
+.stepLabel {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.playPanel button {
+  padding: 11px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  border: none;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.playPanel button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hint {
+  color: var(--text-faint);
+  font-size: 12px;
+}
+
+.error {
+  color: var(--accent-danger);
+  font-size: 12px;
+}

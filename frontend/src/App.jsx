@@ -1,26 +1,45 @@
-import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-
-const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000');
+import { useState } from 'react';
+import { useSocketEvent } from './hooks/useSocketEvent.js';
+import Lobby from './components/Lobby/Lobby.jsx';
+import RoomLobby from './components/RoomLobby/RoomLobby.jsx';
+import GameScreen from './components/GameScreen/GameScreen.jsx';
 
 function App() {
-  const [connected, setConnected] = useState(false);
+  const [room, setRoom] = useState(null);
+  const [publicState, setPublicState] = useState(null);
+  const [myState, setMyState] = useState(null);
+  const [showRoleReveal, setShowRoleReveal] = useState(false);
 
-  useEffect(() => {
-    socket.on('connect', () => setConnected(true));
-    socket.on('disconnect', () => setConnected(false));
+  // These listeners live here (always mounted) instead of inside GameScreen
+  // because game:yourRole fires the instant the host starts the game —
+  // before React has switched screens to mount GameScreen. A listener
+  // attached only on GameScreen mount would miss that first message.
+  useSocketEvent('game:update', (state) => setPublicState(state));
+  useSocketEvent('game:yourRole', (state) => {
+    setMyState(state);
+    setShowRoleReveal(true);
+  });
+  useSocketEvent('game:yourState', (state) => setMyState(state));
 
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-    };
-  }, []);
+  if (!room) {
+    return <Lobby onJoined={(joinedRoom) => setRoom(joinedRoom)} />;
+  }
+
+  const inGame = publicState && publicState.phase !== 'lobby';
+
+  if (!inGame) {
+    return <RoomLobby room={room} />;
+  }
 
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
-      <h1>Werewolf Online</h1>
-      <p>Backend status: {connected ? 'connected' : 'disconnected'}</p>
-    </div>
+    <GameScreen
+      initialRoom={room}
+      publicState={publicState}
+      myState={myState}
+      showRoleReveal={showRoleReveal}
+      onDismissRoleReveal={() => setShowRoleReveal(false)}
+      onGameEnded={() => setPublicState(null)}
+    />
   );
 }
 

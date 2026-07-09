@@ -1,0 +1,79 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(160deg, #241a2e, #1a1224);
+  border: 1px solid var(--accent-ghost);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.15);
+}
+
+.pool {
+  font-weight: 700;
+  color: var(--accent-ghost);
+  margin: 0;
+}
+
+.proposeForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.proposeForm select {
+  padding: 9px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+
+.proposeForm button {
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #7e22ce, #a855f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.proposeForm button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.proposals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposal {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+}
+
+.proposalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.proposalInfo button {
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #7e22ce, #a855f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}

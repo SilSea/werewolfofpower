@@ -1,0 +1,12 @@
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #0d0d12;
+  color: #22c55e;
+}
+
+.urgent {
+  color: #f87171;
+}

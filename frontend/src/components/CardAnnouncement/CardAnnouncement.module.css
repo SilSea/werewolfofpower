@@ -1,0 +1,77 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 55;
+  animation: fadeIn 0.25s ease;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent-moon);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 50px rgba(109, 132, 247, 0.35);
+  animation: popIn 0.35s ease;
+  max-width: 90vw;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--accent-sun);
+  text-align: center;
+  font-weight: 700;
+}
+
+.extraRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dismissButton {
+  padding: 9px 22px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

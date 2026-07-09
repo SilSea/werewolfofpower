@@ -1,0 +1,95 @@
+:root {
+  --bg-deep: #08080d;
+  --bg-panel: #171720;
+  --bg-panel-raised: #1f1f2b;
+  --bg-input: #0d0d14;
+  --border-subtle: #2e2e3d;
+
+  --text-primary: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-faint: #6b7280;
+
+  --accent-blood: #dc2626;
+  --accent-moon: #6d84f7;
+  --accent-sun: #f59e0b;
+  --accent-success: #22c55e;
+  --accent-danger: #f87171;
+  --accent-ghost: #a855f7;
+
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-panel: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(109, 132, 247, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(220, 38, 38, 0.08), transparent),
+    var(--bg-deep);
+  background-attachment: fixed;
+}
+
+button {
+  font-family: inherit;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  box-shadow: 0 4px 14px rgba(109, 132, 247, 0.35);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  color: white;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: #1a1206;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}

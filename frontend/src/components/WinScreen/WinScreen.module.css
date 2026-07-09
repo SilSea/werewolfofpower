@@ -1,0 +1,71 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  animation: fadeIn 0.3s ease;
+}
+
+.panel {
+  text-align: center;
+  color: var(--text-primary);
+  padding: 36px 48px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--accent-sun);
+  box-shadow: 0 0 60px rgba(245, 158, 11, 0.35);
+  animation: popIn 0.4s ease;
+}
+
+.panel h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  margin: 0;
+  color: var(--accent-sun);
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.winnerList {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--accent-success);
+  font-weight: 700;
+}
+
+.returnButton {
+  margin-top: 20px;
+  padding: 11px 26px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
