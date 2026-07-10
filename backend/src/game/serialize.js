@@ -38,5 +38,6 @@ export function serializePrivatePlayer(gameState, playerId) {
     lastProtectedTarget: p.lastProtectedTarget,
     lastGuardedTarget: p.lastGuardedTarget,
     hasCheckedThisRound: p.lastSeerCheckRound === gameState.round,
+    doubleVoteActive: p.status.doubleVoteActive,
   };
 }

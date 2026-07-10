@@ -2,16 +2,24 @@ import { CURSE_CARDS, curseCost } from './curseCards.js';
 import { killPlayer } from './gameState.js';
 import { resolveDeathConsequences, checkWolfCubTrigger } from './nightResolver.js';
 
-export function proposeCurse(gameState, proposerId, cardId, targetId) {
+const MAX_MESSAGE_LENGTH = 200;
+
+export function proposeCurse(gameState, proposerId, cardId, targetId, message) {
   const proposer = gameState.players.get(proposerId);
   if (!proposer?.isGhost) throw new Error('NOT_A_GHOST');
   if (!CURSE_CARDS[cardId]) throw new Error('UNKNOWN_CURSE_CARD');
+
+  if (cardId === 'whisper') {
+    if (typeof message !== 'string' || !message.trim()) throw new Error('MESSAGE_REQUIRED');
+    if (message.length > MAX_MESSAGE_LENGTH) throw new Error('MESSAGE_TOO_LONG');
+  }
 
   const proposal = {
     id: `${gameState.round}-${gameState.spiritProposals.length}`,
     proposerId,
     cardId,
     targetId,
+    message: cardId === 'whisper' ? message.trim() : null,
     votes: new Set([proposerId]),
   };
   gameState.spiritProposals.push(proposal);
@@ -71,6 +79,7 @@ export function resolveSpiritPhase(gameState) {
     cardId: winner.cardId,
     targetId: winner.targetId,
     proposerId: winner.proposerId,
+    message: winner.message,
     round: gameState.round,
   });
   gameState.log.push({
@@ -85,12 +94,12 @@ export function resolveSpiritPhase(gameState) {
 }
 
 function applyCurseEffect(gameState, effect) {
-  const { cardId, targetId } = effect;
+  const { cardId, targetId, message } = effect;
   const round = gameState.round;
 
   switch (cardId) {
     case 'whisper':
-      return { cardId, targetId, note: 'fake_clue_sent' };
+      return { cardId, targetId, message };
 
     case 'silence': {
       const target = gameState.players.get(targetId);

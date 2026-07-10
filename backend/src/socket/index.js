@@ -1,5 +1,8 @@
-import { createRoom, joinRoom, leaveRoom, serializeRoom } from '../state/rooms.js';
+import { createRoom, joinRoom, leaveRoom, serializeRoom, getRoom, setEnabledRoles } from '../state/rooms.js';
 import { registerGameHandlers } from './gameHandlers.js';
+import { registerAdminHandlers } from './adminHandlers.js';
+import { getContentCatalog } from '../admin/contentStore.js';
+import { TOGGLEABLE_ROLES } from '../game/roles.js';
 
 const MAX_NAME_LENGTH = 20;
 
@@ -12,6 +15,8 @@ export function registerSocketHandlers(io) {
     console.log(`player connected: ${socket.id}`);
 
     registerGameHandlers(io, socket);
+    registerAdminHandlers(io, socket);
+    socket.emit('content:catalog', getContentCatalog());
 
     socket.on('room:create', ({ playerName } = {}, callback) => {
       if (!validateName(playerName)) {
@@ -37,6 +42,24 @@ export function registerSocketHandlers(io) {
 
         io.to(room.id).emit('room:update', serializeRoom(room));
         callback?.({ ok: true, room: serializeRoom(room) });
+      } catch (err) {
+        callback?.({ ok: false, error: err.message });
+      }
+    });
+
+    socket.on('room:updateRoleSettings', ({ enabledRoles } = {}, callback) => {
+      const roomId = socket.data.roomId;
+      const room = getRoom(roomId);
+      if (!room) return callback?.({ ok: false, error: 'ROOM_NOT_FOUND' });
+      if (room.hostId !== socket.id) return callback?.({ ok: false, error: 'NOT_HOST' });
+      if (!Array.isArray(enabledRoles) || enabledRoles.some((r) => !TOGGLEABLE_ROLES.includes(r))) {
+        return callback?.({ ok: false, error: 'INVALID_ROLE_LIST' });
+      }
+
+      try {
+        const updatedRoom = setEnabledRoles(roomId, enabledRoles);
+        io.to(roomId).emit('room:update', serializeRoom(updatedRoom));
+        callback?.({ ok: true });
       } catch (err) {
         callback?.({ ok: false, error: err.message });
       }

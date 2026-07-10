@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getAssetVersion } from '../../data/contentSync.js';
 import styles from './Card.module.css';
 
 const RARITY_LABEL = {
@@ -8,7 +9,7 @@ const RARITY_LABEL = {
   legendary: 'Legendary',
 };
 
-export default function Card({ card, cost, selected, disabled, onClick, size = 'md' }) {
+export default function Card({ card, cost, selected, disabled, onClick, onViewDetails, size = 'md' }) {
   const [imageFailed, setImageFailed] = useState(false);
   if (!card) return null;
 
@@ -37,7 +38,7 @@ export default function Card({ card, cost, selected, disabled, onClick, size = '
       <div className={styles.imageArea}>
         {card.image && !imageFailed ? (
           <img
-            src={card.image}
+            src={`${card.image}?v=${getAssetVersion()}`}
             alt={card.name}
             className={styles.image}
             onError={() => setImageFailed(true)}
@@ -55,6 +56,20 @@ export default function Card({ card, cost, selected, disabled, onClick, size = '
         <div className={styles.effect}>{card.effect ?? card.ability}</div>
         {card.limit && <div className={styles.limit}>{card.limit}</div>}
       </div>
+
+      {onViewDetails && (
+        <button
+          type="button"
+          className={styles.infoButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(card, cost);
+          }}
+          aria-label="ดูรายละเอียดการ์ด"
+        >
+          i
+        </button>
+      )}
     </div>
   );
 }

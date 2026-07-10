@@ -1,0 +1,78 @@
+.wrap {
+  padding: 16px;
+  background: linear-gradient(160deg, var(--bg-input), #14142a);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 2px 0 14px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rolePill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.rolePill:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--accent-moon);
+}
+
+.active {
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  border-color: var(--accent-moon);
+  color: white;
+  box-shadow: 0 2px 10px rgba(109, 132, 247, 0.35);
+}
+
+.roleIcon {
+  font-size: 14px;
+}
+
+.readOnly {
+  cursor: default;
+}
+
+.readOnly:hover {
+  transform: none;
+}
+
+.slotInfo {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.overflow {
+  color: var(--accent-danger);
+  font-weight: 700;
+}

@@ -12,8 +12,8 @@ function emptyNightActions() {
   };
 }
 
-export function createGameState(playerIds) {
-  const roleAssignment = assignRoles(playerIds);
+export function createGameState(playerIds, enabledRoles) {
+  const roleAssignment = assignRoles(playerIds, enabledRoles);
   const players = new Map();
 
   for (const id of playerIds) {
@@ -115,6 +115,7 @@ export function killPlayer(gameState, playerId, cause) {
 
   player.alive = false;
   player.isGhost = true;
+  player.cards = [];
   gameState.spiritPool += 1;
   gameState.log.push({ round: gameState.round, type: 'death', playerId, cause });
 

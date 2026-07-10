@@ -1,0 +1,52 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 58;
+  animation: fadeIn 0.2s ease;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: popIn 0.3s ease;
+}
+
+.closeButton {
+  padding: 9px 22px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

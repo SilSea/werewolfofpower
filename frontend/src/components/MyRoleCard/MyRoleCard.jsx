@@ -12,7 +12,7 @@ export default function MyRoleCard({ role }) {
 
   return (
     <div className={styles.wrap}>
-      <p className={styles.label}>Role ของคุณ</p>
+      <p className={styles.label}>บทบาทของคุณ</p>
       <Card card={card} size="sm" />
     </div>
   );

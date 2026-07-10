@@ -1,5 +1,8 @@
+import { DEFAULT_ENABLED_ROLES } from '../game/roles.js';
+
 const ROOM_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
 const ROOM_CODE_LENGTH = 6;
+export const MAX_PLAYERS = 24;
 
 const rooms = new Map();
 
@@ -22,6 +25,7 @@ export function createRoom(hostId, hostName) {
     phase: 'lobby',
     round: 0,
     players: new Map(),
+    enabledRoles: [...DEFAULT_ENABLED_ROLES],
   };
   room.players.set(hostId, {
     id: hostId,
@@ -39,6 +43,7 @@ export function joinRoom(roomId, playerId, playerName) {
   if (!room) throw new Error('ROOM_NOT_FOUND');
   if (room.phase !== 'lobby') throw new Error('GAME_ALREADY_STARTED');
   if (room.players.has(playerId)) throw new Error('ALREADY_IN_ROOM');
+  if (room.players.size >= MAX_PLAYERS) throw new Error('ROOM_FULL');
 
   room.players.set(playerId, {
     id: playerId,
@@ -74,6 +79,18 @@ export function getRoom(roomId) {
   return rooms.get(roomId);
 }
 
+export function listAllRooms() {
+  return [...rooms.values()];
+}
+
+export function setEnabledRoles(roomId, enabledRoles) {
+  const room = rooms.get(roomId);
+  if (!room) throw new Error('ROOM_NOT_FOUND');
+  if (room.phase !== 'lobby') throw new Error('GAME_ALREADY_STARTED');
+  room.enabledRoles = enabledRoles;
+  return room;
+}
+
 export function serializeRoom(room) {
   return {
     id: room.id,
@@ -81,5 +98,7 @@ export function serializeRoom(room) {
     round: room.round,
     hostId: room.hostId,
     players: Array.from(room.players.values()),
+    enabledRoles: room.enabledRoles,
+    maxPlayers: MAX_PLAYERS,
   };
 }

@@ -1,0 +1,71 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  min-height: 500px;
+}
+
+.roomList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.refreshButton {
+  padding: 9px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.roomItem {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.1s ease;
+}
+
+.roomItem:hover {
+  border-color: var(--border-subtle);
+}
+
+.roomItem.selected,
+.selected {
+  border-color: var(--accent-ghost);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.detail {
+  padding: 12px;
+  background: linear-gradient(160deg, #1a1224, #14101c);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--accent-ghost);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.1);
+  overflow: auto;
+}
+
+.json {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #c7c9d1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.empty {
+  color: var(--text-faint);
+  font-size: 13px;
+}

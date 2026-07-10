@@ -36,7 +36,7 @@ export function buildCardAnnouncement(cardId, result, players) {
       return { ...base, subtitle: `${findName(players, result.blockedId)} vote ไม่นับรอบนี้` };
     case 'reveal_role': {
       const name = findName(players, result.revealedId);
-      return { card: roleCard(result.role), title: `${name} ถูกเปิดเผย role!`, subtitle: ROLES[result.role]?.name };
+      return { card: roleCard(result.role), title: `${name} ถูกเปิดเผยบทบาท!`, subtitle: ROLES[result.role]?.name };
     }
     case 'redirect_vote':
       return {

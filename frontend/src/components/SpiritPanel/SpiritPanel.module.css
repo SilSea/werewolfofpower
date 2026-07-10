@@ -16,22 +16,37 @@
   margin: 0;
 }
 
-.proposeForm {
+.stepLabel {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cardGrid {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.proposeForm select {
-  padding: 9px;
+.messageInput {
+  padding: 8px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--bg-input);
   color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12px;
+  resize: vertical;
 }
 
-.proposeForm button {
-  padding: 9px 14px;
+.error {
+  color: var(--accent-danger);
+  font-size: 12px;
+}
+
+.proposeButton {
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   border: none;
   background: linear-gradient(135deg, #7e22ce, #a855f7);
@@ -40,7 +55,7 @@
   cursor: pointer;
 }
 
-.proposeForm button:disabled {
+.proposeButton:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }

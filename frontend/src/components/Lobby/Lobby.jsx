@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { emit } from '../../socket.js';
+import { uiText } from '../../data/uiStrings.js';
 import styles from './Lobby.module.css';
 
 export default function Lobby({ onJoined }) {
@@ -32,9 +33,9 @@ export default function Lobby({ onJoined }) {
       <div className={styles.wrap}>
         <h1 className={styles.title}>
           <span className={styles.wolfIcon}>🐺</span>
-          WEREWOLF
+          {uiText('lobby.title')}
         </h1>
-        <p className={styles.subtitle}>ONLINE — สาปเมือง สาปคน</p>
+        <p className={styles.subtitle}>{uiText('lobby.subtitle')}</p>
 
         <input
           className={styles.input}

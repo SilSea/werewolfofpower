@@ -1,19 +1,8 @@
 import { useState } from 'react';
 import { emit } from '../../socket.js';
+import { useSocketEvent } from '../../hooks/useSocketEvent.js';
+import AvatarPicker from '../AvatarPicker/AvatarPicker.jsx';
 import styles from './NightPanel.module.css';
-
-function TargetSelect({ value, onChange, options, placeholder }) {
-  return (
-    <select value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">{placeholder}</option>
-      {options.map((p) => (
-        <option key={p.id} value={p.id}>
-          {p.name}
-        </option>
-      ))}
-    </select>
-  );
-}
 
 export default function NightPanel({ myState, players, round }) {
   if (!myState?.alive) {
@@ -49,6 +38,9 @@ export default function NightPanel({ myState, players, round }) {
 function WolfVotePanel({ others }) {
   const [targetId, setTargetId] = useState('');
   const [done, setDone] = useState(false);
+  const [tally, setTally] = useState({});
+
+  useSocketEvent('night:wolfVoteUpdate', (payload) => setTally(payload.tally));
 
   async function submit() {
     const res = await emit('night:wolfVote', { targetId });
@@ -58,7 +50,7 @@ function WolfVotePanel({ others }) {
   return (
     <div className={styles.wrap}>
       <p className={styles.label}>เลือกเป้าหมายที่จะฆ่าคืนนี้ (โหวตร่วมกับ wolf คนอื่น)</p>
-      <TargetSelect value={targetId} onChange={setTargetId} options={others} placeholder="เลือกเป้าหมาย" />
+      <AvatarPicker options={others} value={targetId} onChange={setTargetId} badge={(opt) => tally[opt.id]} />
       <button disabled={!targetId} onClick={submit}>
         ยืนยัน
       </button>
@@ -84,7 +76,7 @@ function SeerPanel({ others, alreadyChecked }) {
   return (
     <div className={styles.wrap}>
       <p className={styles.label}>เลือกเป้าหมายที่จะตรวจสอบ faction (คืนละ 1 คนเท่านั้น)</p>
-      <TargetSelect value={targetId} onChange={setTargetId} options={others} placeholder="เลือกเป้าหมาย" />
+      <AvatarPicker options={others} value={targetId} onChange={setTargetId} />
       <button disabled={!targetId || locked} onClick={check}>
         {locked ? 'ตรวจไปแล้วคืนนี้' : 'ตรวจสอบ'}
       </button>
@@ -109,7 +101,7 @@ function ProtectPanel({ others, lastTarget, event, label }) {
     <div className={styles.wrap}>
       <p className={styles.label}>{label}</p>
       {lastTarget && <p className={styles.hint}>ปกป้องคนเดิมซ้ำ 2 คืนติดไม่ได้</p>}
-      <TargetSelect value={targetId} onChange={setTargetId} options={options} placeholder="เลือกเป้าหมาย" />
+      <AvatarPicker options={options} value={targetId} onChange={setTargetId} />
       <button disabled={!targetId} onClick={submit}>
         ยืนยัน
       </button>
@@ -141,7 +133,7 @@ function WitchPanel({ others, myState }) {
       </button>
 
       <p className={styles.label}>Poison Potion — ฆ่าเป้าหมายทันที</p>
-      <TargetSelect value={poisonTarget} onChange={setPoisonTarget} options={others} placeholder="เลือกเป้าหมาย" />
+      <AvatarPicker options={others} value={poisonTarget} onChange={setPoisonTarget} />
       <button disabled={myState.witchPoisonUsed || poisonDone || !poisonTarget} onClick={usePoison}>
         {myState.witchPoisonUsed || poisonDone ? 'ใช้ไปแล้ว' : 'ใช้ Poison Potion'}
       </button>
@@ -161,9 +153,10 @@ function CupidPanel({ others }) {
 
   return (
     <div className={styles.wrap}>
-      <p className={styles.label}>เลือก 2 คนเป็น Lovers (คืนแรกเท่านั้น)</p>
-      <TargetSelect value={a} onChange={setA} options={others.filter((p) => p.id !== b)} placeholder="คนที่ 1" />
-      <TargetSelect value={b} onChange={setB} options={others.filter((p) => p.id !== a)} placeholder="คนที่ 2" />
+      <p className={styles.label}>เลือกเป้าหมาย Lovers คนที่ 1 (คืนแรกเท่านั้น)</p>
+      <AvatarPicker options={others.filter((p) => p.id !== b)} value={a} onChange={setA} />
+      <p className={styles.label}>เลือกเป้าหมาย Lovers คนที่ 2</p>
+      <AvatarPicker options={others.filter((p) => p.id !== a)} value={b} onChange={setB} />
       <button disabled={!a || !b || a === b} onClick={submit}>
         ยืนยัน
       </button>
@@ -184,7 +177,7 @@ function HunterPanel({ others, current }) {
   return (
     <div className={styles.wrap}>
       <p className={styles.label}>ตั้งเป้าหมายล้างแค้น (ถ้าคุณตาย จะยิงคนนี้ตามไปด้วย)</p>
-      <TargetSelect value={targetId} onChange={setTargetId} options={others} placeholder="เลือกเป้าหมาย" />
+      <AvatarPicker options={others} value={targetId} onChange={setTargetId} />
       <button disabled={!targetId} onClick={submit}>
         ตั้งเป้าหมาย
       </button>

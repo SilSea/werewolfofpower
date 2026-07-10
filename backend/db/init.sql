@@ -99,8 +99,50 @@ INSERT INTO curse_cards (id, name, category, cost_ratio, effect, usage_limit) VA
 ('nightmare',                'Nightmare',                'disrupt',     0.30, 'เป้าหมาย vote ไม่ได้ 1 round', NULL),
 ('chill',                    'Chill',                    'disrupt_aoe', 0.40, 'ซ่อน vote ทุกคนที่มีชีวิต ไม่ให้เห็นใครโหวตใคร รอบนี้ (ผลโหวตยังนับปกติ)', NULL),
 ('weaken',                   'Weaken',                   'disrupt',     0.40, 'บล็อก role ability เป้าหมาย 1 คืน', NULL),
-('false_accusation',         'False Accusation',         'disrupt_aoe', 0.60, 'บังคับระบบแสดง vote ปลอมของทุกคนที่มีชีวิต ตามที่ผีกำหนด', '1_per_game'),
-('mark_of_death',            'Mark of Death',            'kill_tier',   0.60, 'เป้าหมายตาย night ถัดไปถ้าไม่มี protect', NULL),
-('curse_of_silence_council', 'Curse of Silence Council', 'disrupt',     0.70, 'บล็อก vote ทั้งโต๊ะ ไม่นับ 1 รอบ (mass disrupt)', '1_per_game'),
-('soul_reap',                'Soul Reap',                'kill_tier',   0.90, 'ฆ่าเป้าหมายทันที ข้าม protect ปกติ', '1_per_game')
+('false_accusation',         'False Accusation',         'disrupt_aoe', 0.45, 'บังคับระบบแสดง vote ปลอมของทุกคนที่มีชีวิต ตามที่ผีกำหนด', '1_per_game'),
+('mark_of_death',            'Mark of Death',            'kill_tier',   0.40, 'เป้าหมายตาย night ถัดไปถ้าไม่มี protect', NULL),
+('curse_of_silence_council', 'Curse of Silence Council', 'disrupt',     0.50, 'บล็อก vote ทั้งโต๊ะ ไม่นับ 1 รอบ (mass disrupt)', '1_per_game'),
+('soul_reap',                'Soul Reap',                'kill_tier',   0.65, 'ฆ่าเป้าหมายทันที ข้าม protect ปกติ', '1_per_game')
 ON CONFLICT (id) DO NOTHING;
+
+-- Player-facing flavor text (lobby title, phase labels, win/death/curse
+-- messages) — admin-editable. backend/src/admin/uiStringDefaults.js is the
+-- source of truth (it also auto-inserts any new key added there later);
+-- this INSERT just keeps a fresh DB usable without waiting for server boot.
+CREATE TABLE IF NOT EXISTS ui_strings (
+  key   VARCHAR(60) PRIMARY KEY,
+  text  TEXT NOT NULL
+);
+
+INSERT INTO ui_strings (key, text) VALUES
+('lobby.title',    'WEREWOLF'),
+('lobby.subtitle', 'ONLINE — สาปเมือง สาปคน'),
+
+('phase.night', 'กลางคืน'),
+('phase.day',   'กลางวัน'),
+('phase.ended', 'จบเกม'),
+
+('win.village',  'ฝ่าย Village ชนะ'),
+('win.werewolf', 'ฝ่าย Werewolf ชนะ'),
+('win.tanner',   'Tanner ชนะเดี่ยว'),
+('win.lovers',   'Lovers ชนะร่วมกัน'),
+
+('death.wolf_kill',        'โดน Werewolf ฆ่า'),
+('death.wolf_kill_bonus',  'โดน Werewolf ฆ่า (Wolf Cub bonus)'),
+('death.witch_poison',     'โดนยาพิษของ Witch'),
+('death.day_vote',         'ถูกโหวตประหาร'),
+('death.hunter_revenge',   'โดน Hunter ยิงแก้แค้น'),
+('death.lover_heartbreak', 'ตายตามคู่รัก (Heartbreak)'),
+('death.mark_of_death',    'โดนคำสาป Mark of Death'),
+('death.soul_reap',        'โดนคำสาป Soul Reap'),
+
+('curse.silence',                  '{name} พูด chat ไม่ได้รอบนี้ (Silence)'),
+('curse.reveal_role',              '{name} ถูกเปิดเผย role: {role}'),
+('curse.nightmare',                '{name} vote ไม่ได้รอบนี้ (Nightmare)'),
+('curse.chill',                    'Vote รอบนี้ถูกซ่อน ไม่เห็นใครโหวตใคร (Chill)'),
+('curse.weaken',                   '{name} ใช้ ability คืนถัดไปไม่ได้ (Weaken)'),
+('curse.false_accusation',         'ระบบแสดง vote ปลอมทั้งโต๊ะ (False Accusation)'),
+('curse.mark_of_death',            '{name} จะตายคืนถัดไปถ้าไม่มี protect (Mark of Death)'),
+('curse.curse_of_silence_council', 'Vote ทั้งโต๊ะถูกบล็อกรอบนี้ (Curse of Silence Council)'),
+('curse.soul_reap',                '{name} ถูกฆ่าทันทีข้าม protect (Soul Reap)')
+ON CONFLICT (key) DO NOTHING;

@@ -3,11 +3,13 @@ import { socket, emit } from '../../socket.js';
 import { useSocketEvent } from '../../hooks/useSocketEvent.js';
 import { ROLES } from '../../data/roles.js';
 import { CURSE_CARDS } from '../../data/curseCards.js';
+import { uiText } from '../../data/uiStrings.js';
 import { buildCardAnnouncement } from '../../utils/cardAnnouncementBuilder.js';
 import RoleReveal from '../RoleReveal/RoleReveal.jsx';
 import MyRoleCard from '../MyRoleCard/MyRoleCard.jsx';
 import PhaseTimer from '../PhaseTimer/PhaseTimer.jsx';
 import CardAnnouncement from '../CardAnnouncement/CardAnnouncement.jsx';
+import NightRecapModal from '../NightRecapModal/NightRecapModal.jsx';
 import NightPanel from '../NightPanel/NightPanel.jsx';
 import DayPanel from '../DayPanel/DayPanel.jsx';
 import Hand from '../Hand/Hand.jsx';
@@ -22,11 +24,13 @@ export default function GameScreen({ initialRoom, publicState, myState, showRole
   const [voteResult, setVoteResult] = useState(null);
   const [log, setLog] = useState([]);
   const [announcement, setAnnouncement] = useState(null);
+  const [nightRecap, setNightRecap] = useState(null);
 
-  useSocketEvent('night:resolved', ({ deadIds, spiritResult, curseResults }) => {
+  useSocketEvent('night:resolved', ({ deaths, spiritResult, curseResults, round }) => {
     setVoteResult(null);
+    setNightRecap({ round, deaths, curseResults });
     const lines = [];
-    lines.push(deadIds.length > 0 ? `กลางคืนมีคนตาย: ${deadIds.length} คน` : 'กลางคืนไม่มีใครตาย');
+    lines.push(deaths.length > 0 ? `กลางคืนมีคนตาย: ${deaths.length} คน` : 'กลางคืนไม่มีใครตาย');
     if (spiritResult?.resolved) lines.push(`ผีใช้ curse: ${CURSE_CARDS[spiritResult.cardId]?.name}`);
     for (const c of curseResults ?? []) lines.push(`Curse effect: ${CURSE_CARDS[c.cardId]?.name ?? c.cardId}`);
     setLog((prev) => [...prev, ...lines]);
@@ -42,8 +46,12 @@ export default function GameScreen({ initialRoom, publicState, myState, showRole
 
   useSocketEvent('card:roleRevealed', ({ revealedId, role }) => {
     const name = publicState.players.find((p) => p.id === revealedId)?.name ?? revealedId;
-    setLog((prev) => [...prev, `${name} ถูกเปิดเผย role: ${ROLES[role]?.name ?? role}`]);
+    setLog((prev) => [...prev, `${name} ถูกเปิดเผยบทบาท: ${ROLES[role]?.name ?? role}`]);
     setAnnouncement(buildCardAnnouncement('reveal_role', { revealedId, role }, publicState.players));
+  });
+
+  useSocketEvent('curse:whisperReceived', ({ message }) => {
+    setAnnouncement({ card: CURSE_CARDS.whisper, title: '📜 มีคนกระซิบข้อความลึกลับถึงคุณ', subtitle: message });
   });
 
   function handleCardPlayed(cardId, result) {
@@ -62,6 +70,7 @@ export default function GameScreen({ initialRoom, publicState, myState, showRole
     <div className={styles.wrap}>
       {showRoleReveal && myState && <RoleReveal role={myState.role} onDismiss={onDismissRoleReveal} />}
       <CardAnnouncement announcement={announcement} onDismiss={() => setAnnouncement(null)} />
+      <NightRecapModal recap={nightRecap} players={publicState.players} onClose={() => setNightRecap(null)} />
       {publicState.winner && (
         <WinScreen winner={publicState.winner} players={publicState.players} onReturnToRoom={handleReturnToRoom} />
       )}
@@ -71,7 +80,11 @@ export default function GameScreen({ initialRoom, publicState, myState, showRole
           <span className={styles.phaseIcon}>{publicState.phase === 'night' ? '🌙' : publicState.phase === 'day' ? '☀️' : '🏁'}</span>
           <div>
             <p className={styles.phaseName}>
-              {publicState.phase === 'night' ? 'กลางคืน' : publicState.phase === 'day' ? 'กลางวัน' : 'จบเกม'}
+              {publicState.phase === 'night'
+                ? uiText('phase.night')
+                : publicState.phase === 'day'
+                  ? uiText('phase.day')
+                  : uiText('phase.ended')}
             </p>
             <p className={styles.round}>Round {publicState.round}</p>
           </div>
@@ -90,7 +103,12 @@ export default function GameScreen({ initialRoom, publicState, myState, showRole
         <div className={styles.main}>
           {publicState.phase === 'night' && <NightPanel myState={myState} players={publicState.players} round={publicState.round} />}
           {publicState.phase === 'day' && <DayPanel myState={myState} players={publicState.players} voteResult={voteResult} />}
-          <SpiritPanel myState={myState} players={publicState.players} totalPlayers={publicState.players.length} />
+          <SpiritPanel
+            myState={myState}
+            players={publicState.players}
+            totalPlayers={publicState.players.length}
+            spiritPool={publicState.spiritPool}
+          />
           {myState && (
             <Hand
               cards={myState.cards}

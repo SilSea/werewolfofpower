@@ -1,17 +1,14 @@
+import { UI_STRINGS, uiText } from '../../data/uiStrings.js';
 import styles from './WinScreen.module.css';
 
-const FACTION_LABEL = {
-  village: 'ฝ่าย Village ชนะ',
-  werewolf: 'ฝ่าย Werewolf ชนะ',
-  tanner: 'Tanner ชนะเดี่ยว',
-  lovers: 'Lovers ชนะร่วมกัน',
-};
-
 export default function WinScreen({ winner, players, onReturnToRoom }) {
+  const key = `win.${winner.faction}`;
+  const label = key in UI_STRINGS ? uiText(key) : winner.faction;
+
   return (
     <div className={styles.overlay}>
       <div className={styles.panel}>
-        <h2>{FACTION_LABEL[winner.faction] ?? winner.faction}</h2>
+        <h2>{label}</h2>
         <ul className={styles.winnerList}>
           {winner.playerIds.map((id) => (
             <li key={id}>{players.find((p) => p.id === id)?.name ?? id}</li>

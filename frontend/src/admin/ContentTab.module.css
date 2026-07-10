@@ -1,0 +1,131 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading {
+  color: var(--text-faint);
+}
+
+.section {
+  padding: 14px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 8px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 100px 160px 1fr 90px 80px;
+  gap: 8px;
+  align-items: start;
+}
+
+.imageUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+}
+
+.uploadButton {
+  font-size: 9px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+}
+
+.uploadButton:hover {
+  border-color: var(--accent-moon);
+  color: var(--text-primary);
+}
+
+.uiRow {
+  display: grid;
+  grid-template-columns: 200px 1fr 90px 80px;
+  gap: 8px;
+  align-items: start;
+}
+
+.hint {
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.id {
+  font-size: 11px;
+  color: var(--text-faint);
+  padding-top: 8px;
+}
+
+.nameInput,
+.effectInput {
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.saveButton {
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, #4c6ef5, #6d84f7);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  height: fit-content;
+}
+
+.saved {
+  color: var(--accent-success);
+  font-size: 11px;
+  align-self: center;
+}
+
+.errorTag {
+  color: var(--accent-danger);
+  font-size: 11px;
+  align-self: center;
+}
+
+@media (max-width: 900px) {
+  .row,
+  .uiRow {
+    grid-template-columns: 1fr;
+  }
+}

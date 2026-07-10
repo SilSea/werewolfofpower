@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { socket, emit } from '../../socket.js';
 import { useSocketEvent } from '../../hooks/useSocketEvent.js';
 import { colorForId } from '../../utils/avatarColor.js';
+import RoleSettings, { roleSettingsOverflow } from './RoleSettings.jsx';
 import styles from './RoomLobby.module.css';
 
 const MIN_PLAYERS = 5;
@@ -13,7 +14,9 @@ export default function RoomLobby({ room: initialRoom }) {
   useSocketEvent('room:update', (updatedRoom) => setRoom(updatedRoom));
 
   const isHost = room.hostId === socket.id;
-  const canStart = room.players.length >= MIN_PLAYERS;
+  const enabledRoles = room.enabledRoles ?? [];
+  const overflow = roleSettingsOverflow(enabledRoles, room.players.length);
+  const canStart = room.players.length >= MIN_PLAYERS && !overflow;
 
   async function handleStart() {
     const res = await emit('game:start', {});
@@ -25,7 +28,9 @@ export default function RoomLobby({ room: initialRoom }) {
       <div className={styles.wrap}>
         <p className={styles.eyebrow}>ห้องรอ</p>
         <h2 className={styles.roomCode}>{room.id}</h2>
-        <p className={styles.hint}>ส่งรหัสห้องนี้ให้เพื่อนเข้าร่วม</p>
+        <p className={styles.hint}>
+          ส่งรหัสห้องนี้ให้เพื่อนเข้าร่วม — {room.players.length}/{room.maxPlayers ?? 24} คน
+        </p>
 
         <div className={styles.avatarGrid}>
           {room.players.map((p) => (
@@ -45,9 +50,15 @@ export default function RoomLobby({ room: initialRoom }) {
           ))}
         </div>
 
+        <RoleSettings enabledRoles={enabledRoles} isHost={isHost} playerCount={room.players.length} />
+
         {isHost ? (
           <button className="btn btn-gold" disabled={!canStart} onClick={handleStart}>
-            {canStart ? '🐺 เริ่มเกม' : `ต้องการผู้เล่นอย่างน้อย ${MIN_PLAYERS} คน (มี ${room.players.length})`}
+            {room.players.length < MIN_PLAYERS
+              ? `ต้องการผู้เล่นอย่างน้อย ${MIN_PLAYERS} คน (มี ${room.players.length})`
+              : overflow
+                ? 'ปิด role บางตัวก่อนเริ่มเกม'
+                : '🐺 เริ่มเกม'}
           </button>
         ) : (
           <p className={styles.waiting}>รอ host เริ่มเกม...</p>

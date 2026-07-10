@@ -40,6 +40,16 @@ function buildLiveTally(gameState) {
   return { tally: buildDisplayTally(gameState, realTally), majorityThreshold: Math.floor(aliveCount / 2) + 1 };
 }
 
+function broadcastWolfVoteTally(io, gameState) {
+  const tally = {};
+  for (const targetId of gameState.nightActions.wolfVotes.values()) {
+    if (targetId == null) continue;
+    tally[targetId] = (tally[targetId] ?? 0) + 1;
+  }
+  const wolfIds = [...gameState.players.values()].filter((p) => p.faction === 'werewolf' && p.alive).map((p) => p.id);
+  for (const id of wolfIds) io.to(id).emit('night:wolfVoteUpdate', { tally });
+}
+
 function broadcastGhostState(io, gameState) {
   const ghostIds = [...gameState.players.values()].filter((p) => p.isGhost).map((p) => p.id);
   const payload = {
@@ -75,6 +85,10 @@ async function performResolveNight(io, roomId) {
 
   const spiritResult = resolveSpiritPhase(gameState);
   const deadIds = resolveNight(gameState);
+  const deaths = deadIds.map((playerId) => {
+    const entry = [...gameState.log].reverse().find((e) => e.type === 'death' && e.playerId === playerId && e.round === gameState.round);
+    return { playerId, cause: entry?.cause ?? 'unknown' };
+  });
   gameState.phase = 'day';
 
   const cardResults = [];
@@ -92,7 +106,13 @@ async function performResolveNight(io, roomId) {
     schedulePhaseTimer(roomId, DAY_DURATION_SEC, () => performResolveDay(io, roomId));
   }
 
-  io.to(roomId).emit('night:resolved', { deadIds, spiritResult, curseResults });
+  for (const result of curseResults) {
+    if (result.cardId === 'whisper' && result.message) {
+      io.to(result.targetId).emit('curse:whisperReceived', { message: result.message });
+    }
+  }
+  const publicCurseResults = curseResults.map(({ message, ...rest }) => rest); // whisper text stays private
+  io.to(roomId).emit('night:resolved', { deadIds, deaths, spiritResult, curseResults: publicCurseResults, round: gameState.round });
   for (const dealt of cardResults) {
     if (dealt.overflow) {
       gameState.players.get(dealt.playerId).pendingCardChoice = dealt.candidates;
@@ -138,7 +158,7 @@ export function registerGameHandlers(io, socket) {
     const playerIds = [...room.players.keys()];
     let gameState;
     try {
-      gameState = startGame(roomId, playerIds);
+      gameState = startGame(roomId, playerIds, room.enabledRoles);
     } catch (err) {
       return callback?.({ ok: false, error: err.message });
     }
@@ -158,6 +178,7 @@ export function registerGameHandlers(io, socket) {
     const caster = gameState.players.get(socket.id);
     if (caster.faction !== 'werewolf' || !caster.alive) return callback?.({ ok: false, error: 'NOT_ALLOWED' });
     gameState.nightActions.wolfVotes.set(socket.id, targetId);
+    broadcastWolfVoteTally(io, gameState);
     callback?.({ ok: true });
   });
 
@@ -272,11 +293,11 @@ export function registerGameHandlers(io, socket) {
     }
   });
 
-  socket.on('spirit:propose', ({ cardId, targetId } = {}, callback) => {
+  socket.on('spirit:propose', ({ cardId, targetId, message } = {}, callback) => {
     const { gameState, error } = requireGame(socket, 'night');
     if (error) return callback?.({ ok: false, error });
     try {
-      const proposal = proposeCurse(gameState, socket.id, cardId, targetId);
+      const proposal = proposeCurse(gameState, socket.id, cardId, targetId, message);
       broadcastGhostState(io, gameState);
       callback?.({ ok: true, proposalId: proposal.id });
     } catch (err) {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Card from '../Card/Card.jsx';
 import AvatarPicker from '../AvatarPicker/AvatarPicker.jsx';
+import CardDetailModal from '../CardDetailModal/CardDetailModal.jsx';
 import { ACTION_CARDS } from '../../data/actionCards.js';
 import { ROLES } from '../../data/roles.js';
 import { emit } from '../../socket.js';
@@ -17,6 +18,7 @@ export default function Hand({ cards, players, deadTeammates, pendingCardChoice,
   const [redirectToId, setRedirectToId] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [viewingCard, setViewingCard] = useState(null);
 
   if (pendingCardChoice) {
     return <HandOverflowChoice candidates={pendingCardChoice} />;
@@ -81,10 +83,13 @@ export default function Hand({ cards, players, deadTeammates, pendingCardChoice,
             selected={cardId === selectedCardId}
             disabled={PASSIVE_CARDS.has(cardId)}
             onClick={() => selectCard(cardId)}
+            onViewDetails={(card) => setViewingCard(card)}
           />
         ))}
         {cards.length === 0 && <p className={styles.empty}>ไม่มีการ์ดในมือ</p>}
       </div>
+
+      <CardDetailModal card={viewingCard} onClose={() => setViewingCard(null)} />
 
       {selectedCard && (
         <div className={styles.playPanel}>
@@ -133,6 +138,7 @@ export default function Hand({ cards, players, deadTeammates, pendingCardChoice,
 function HandOverflowChoice({ candidates }) {
   const [keep, setKeep] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [viewingCard, setViewingCard] = useState(null);
 
   function toggle(cardId, idx) {
     const key = `${cardId}-${idx}`;
@@ -157,12 +163,14 @@ function HandOverflowChoice({ candidates }) {
             size="sm"
             selected={keep.includes(`${cardId}-${idx}`)}
             onClick={() => toggle(cardId, idx)}
+            onViewDetails={(card) => setViewingCard(card)}
           />
         ))}
       </div>
       <button disabled={keep.length !== 3 || busy} onClick={submit}>
         ยืนยัน
       </button>
+      <CardDetailModal card={viewingCard} onClose={() => setViewingCard(null)} />
     </div>
   );
 }
